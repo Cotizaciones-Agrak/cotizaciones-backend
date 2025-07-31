@@ -35,11 +35,27 @@ app.get('/get_next_id', async (req, res) => {
   }
 });
 
-// app.get('/resetFolio', async (req, res) => {
-//   // Obtener el número actual de la base de datos
-//   await db.resetFolio();
-//   res.json({status: "Reseteado"});
-// });
+app.get('/resetFolio', async (req, res) => {
+  // Obtener el número actual de la base de datos
+  await db.resetFolio();
+  res.json({status: "Reseteado"});
+});
+
+// Nuevo endpoint para setear un folio específico
+app.get('/set_folio/:numero', async (req, res) => {
+  try {
+    const numero = parseInt(req.params.numero, 10);
+    if (isNaN(numero) || numero < 1) {
+      return res.status(400).send("Número de folio inválido");
+    }
+
+    await db.setFolio(numero);
+    res.json({ status: "Folio actualizado", folio: numero });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error al establecer el folio");
+  }
+});
 
 // app.get('/createTable', async (req, res) => {
 //   // Obtener el número actual de la base de datos
