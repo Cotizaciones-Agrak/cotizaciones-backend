@@ -4,16 +4,27 @@
  * Server API calls the methods in here to query and update the SQLite database
  */
 
-// Utilities we need
 const fs = require("fs");
-
-// Initialize the database
-const dbFile = "./.data/choices.db";
-const exists = fs.existsSync(dbFile);
+const path = require("path");
 const sqlite3 = require("sqlite3").verbose();
 const dbWrapper = require("sqlite");
+
 let db;
 
+// 📌 Determinar ruta de la base de datos
+// En producción (Render, Railway, etc.) se usará /tmp que sí es escribible
+const isProduction = process.env.NODE_ENV === "production";
+const dbDir = isProduction ? "/tmp" : path.join(__dirname, "..", ".data");
+
+// Crear carpeta si no existe
+if (!fs.existsSync(dbDir)) {
+  fs.mkdirSync(dbDir, { recursive: true });
+}
+
+const dbFile = path.join(dbDir, "choices.db");
+const exists = fs.existsSync(dbFile);
+
+console.log(`📦 Usando base de datos en: ${dbFile}`);
 /* 
 We're using the sqlite wrapper so that we can make async / await connections
 - https://www.npmjs.com/package/sqlite
