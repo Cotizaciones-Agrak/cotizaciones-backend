@@ -90,6 +90,16 @@ module.exports = {
       console.error(dbError);
     }
   },
+
+  // Nuevo: permite establecer un número específico de folio
+  setFolio: async (numero) => {
+    try {
+      await db.run("UPDATE Cotizaciones SET numero = ? WHERE id = 0", numero);
+      console.log(`✅ Folio establecido a: ${numero}`);
+    } catch (dbError) {
+      console.error("❌ Error en setFolio:", dbError);
+    }
+  },
   
   // errorXD: async() => {
   //   try {
