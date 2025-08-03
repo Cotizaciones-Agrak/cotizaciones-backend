@@ -12,16 +12,16 @@ app.use(cors());
 const db = require('./src/postgres.js');
 const lock = new AsyncLock();
 
-function delay(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
+// function delay(ms) {
+//   return new Promise(resolve => setTimeout(resolve, ms));
+// }
 
 // Obtener el número de folio
 app.get('/get_next_id', async (req, res) => {
   try {
     // Adquirir un lock compartido
     await lock.acquire('folioLock', async () => {
-      await delay(5000);
+      // await delay(5000);
       // Obtener el número actual de la base de datos
       const Folio = await db.getFolio();
       // Incrementar el folio en la base de datos
