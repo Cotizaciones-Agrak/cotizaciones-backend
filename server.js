@@ -1,5 +1,5 @@
+require('dotenv').config();
 const express = require('express');
-const sqlite3 = require('sqlite3');
 const cors = require('cors');
 const AsyncLock = require('async-lock');
 
@@ -9,15 +9,19 @@ const port = process.env.PORT || 3000;
 // Permitir CORS a todo
 app.use(cors());
 
-const data = require("./src/data.json");
-const db = require("./src/" + data.database);
+const db = require('./src/postgres.js');
 const lock = new AsyncLock();
+
+function delay(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 // Obtener el número de folio
 app.get('/get_next_id', async (req, res) => {
   try {
     // Adquirir un lock compartido
     await lock.acquire('folioLock', async () => {
+      await delay(5000);
       // Obtener el número actual de la base de datos
       const Folio = await db.getFolio();
       // Incrementar el folio en la base de datos
@@ -57,23 +61,6 @@ app.get('/set_folio/:numero', async (req, res) => {
   }
 });
 
-// app.get('/createTable', async (req, res) => {
-//   // Obtener el número actual de la base de datos
-//   const ret_log = await db.createTable();
-//   res.json({devuelto: ret_log});
-// });
-
-// app.get('/error', async (req, res) => {
-//   // Obtener el número actual de la base de datos
-//   const Folio = undefined;
-//   if (!Folio){
-//     res.status(400).send('No hay folio');
-//   } else {
-//     res.status(200).send('Estuvo bien');
-//   }
-// });
-
-// Iniciar el servidor
 app.listen(port, () => {
   console.log(`Servidor escuchando en el puerto ${port}`);
 });
